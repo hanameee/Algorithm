@@ -47,7 +47,7 @@ print(data)
 ### 알고리즘 성능
 
 반복문이 2개이므로 O(n^2) : 최악의 경우 n(n-1)/2 번 돈다
-최선의 경우 O(n) : 처음 한번만 돌고 break
+최선의 경우 O(n) : 완전 정렬이 되어 있는 경우 처음 한번만 돌고 break
 
 ### lesson learned
 
@@ -59,7 +59,8 @@ print(data)
 
 ## 2. 선택 정렬 (selection sort)
 
-선택정렬이란?다음과 같은 순서를 반복하며 정렬하는 알고리즘
+선택정렬이란?
+다음과 같은 순서를 반복하며 정렬하는 알고리즘
 
 1. 주어진 데이터 중, 최소값을 찾음
 2. 해당 최소값을 데이터 맨 앞에 위치한 값과 교체함
@@ -98,3 +99,58 @@ def selection_sort(data):
 
 
 ## 3. 삽입 정렬 (insertion sort)
+
+삽입정렬이란?
+
+- 삽입 정렬은 두 번째 인덱스부터 시작 (첫 번째 인덱스는 정렬되어 있다고 가정)
+- 해당 인덱스(key 값) 바로 앞에 있는 데이터(B)부터 비교해서 key 값이 더 작으면, B값을 뒤 인덱스로 복사
+- 이를 key 값이 더 큰 데이터를 만날때까지 반복, 그리고 큰 데이터를 만난 위치 바로 뒤에 key 값을 이동 (큰 데이터를 일단 한번 만나면 그 이후는 고려 X)
+
+`내가 처음 작성한 삽입정렬 `
+
+```python
+def insertion_sort(data):
+    for i in range(len(data)-1):
+      	# 나는 현재 바라보고 있는 data를 변수에 저장해두고 비교하는 식으로 구현
+        sorting_data = data[i+1]
+        for j in range(i+1):
+            if sorting_data < data[i-j]:
+                data[i-j+1] = data[i-j]
+                if i-j == 0:
+                    data[0] = sorting_data
+            else:
+                data[i-j+1] = sorting_data
+                break
+```
+
+`모범답안 삽입정렬`
+
+```python
+def insertion_sort(data):
+    for i in range(len(data)-1):
+      	# 모범 답안은 key 값을 줄이며 swap 해가는 식으로 구현
+        for j in range(i+1, 0, -1):
+            if data[j] < data[j-1]:
+                data[j], data[j-1] = data[j-1], data[j]
+            else:
+                break
+    return data
+```
+
+### 알고리즘 성능
+
+반복문이 2개이므로 O(n^2) : 최악의 경우 n(n-1)/2 번 돈다
+최선의 경우 O(n) : 완전 정렬이 되어 있는 경우 처음 한번만 돌고 break
+
+### lesson learned
+
+- For 문에서 range를 활용해 index 뒤부터 가져오는 방법
+
+  ```python
+  for j in range(i+1, 0, -1):
+    if data[j] < data[j-1]:
+      data[j], data[j-1] = data[j-1], data[j]
+  ```
+
+  
+
