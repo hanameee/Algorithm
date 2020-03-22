@@ -40,13 +40,3 @@ for case in range(test_case):
             make_set(B)
         union(A, B)
         print(number[find(A)])
-
-# 2
-# 3
-# Fred Barney
-# Barney Betty
-# Betty Wilma
-# 3
-# Fred Barney
-# Betty Wilma
-# Barney Betty
