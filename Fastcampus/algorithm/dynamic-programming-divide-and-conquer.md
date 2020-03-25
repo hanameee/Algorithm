@@ -49,7 +49,7 @@ def recursive_fibonacci(n):
 
 #### 동적 계획법으로 풀어본 피보나치 수열
 
-참고: 파이썬의 list comprehension`
+참고: 파이썬의 list comprehension
 
 ` list [ ( 변수를 활용한 값 ) for ( 사용할 변수 이름 ) in ( 순회할 수 있는 값 )]`
 `예시: doubled_arr = [i * 2 for i in range(size)]`
