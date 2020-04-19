@@ -1,28 +1,24 @@
 import sys
+sys.setrecursionlimit(100000)
 input = sys.stdin.readline
-
-
-def memoization(rocks):
-    a, b, c = sorted(rocks)
-    memory[a][b][c] = True
-    return
 
 
 def play_game(rocks):
     global result
-    a, b, c = sorted(rocks)
-    if memory[a][b][c]:
+    a, b, c = rocks
+    if memory[a][b] or a == 0:
         return
     if a == b and b == c:
-        result = 1
-        return
+        print(1)
+        sys.exit(0)
     else:
+        memory[a][b] = True
         rocks_list = [[2*a, b-a, c], [2*a, b, c-a], [a, 2*b, c-b]]
-        memoization(rocks_list[0])
+        rocks_list[0].sort()
+        rocks_list[1].sort()
+        rocks_list[2].sort()
         play_game(rocks_list[0])
-        memoization(rocks_list[1])
         play_game(rocks_list[1])
-        memoization(rocks_list[2])
         play_game(rocks_list[2])
 
 
@@ -33,7 +29,7 @@ if sum_data % 3 != 0:
     print(0)
     sys.exit(0)
 else:
-    memory = [[[False]*1001]*501]*501
-a, b, c = data
+    memory = [[0]*726 for i in range(726)]
+a, b, c = sorted(data)
 play_game([a, b, c])
 print(result)
