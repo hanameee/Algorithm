@@ -1,5 +1,4 @@
 from collections import deque
-from itertools import permutations
 from copy import deepcopy
 import sys
 
@@ -15,18 +14,16 @@ for _ in range(k):
 def rotate(r, c, s, graph):
     global n, m
     g = deepcopy(graph)
-    for x in range(r-s, r+s+1):
-        for y in range(c-s, c+s+1):
-            if x == r-s and y < c+s:
-                g[x][y+1] = graph[x][y]
-            if x < r-s and y == c+s:
-                g[x+1][y] = graph[x][y]
-            if x == r+s and y > c-s:
-                g[x][y-1] = graph[x][y]
-            if x > r-s and y == c-s:
-                g[x-1][y] = graph[x][y]
-    for _ in g:
-        print(_)
+    while s > 0:
+        for x in range(r-s+1, r+s+1):
+            g[x-1][c-s] = graph[x][c-s]
+        for y in range(c-s, c+s):
+            g[r-s][y+1] = graph[r-s][y]
+        for x in range(r-s, r+s):
+            g[x+1][c+s] = graph[x][c+s]
+        for y in range(c-s+1, c+s+1):
+            g[r+s][y-1] = graph[r+s][y]
+        s -= 1
     return g
 
 
@@ -37,17 +34,19 @@ def compute_min(graph):
     return
 
 
-commands_perm = permutations(range(len(commands)))
-# 0,1 1,0
-for command in commands_perm:
-    print(command)
-    g = graph
+def dfs(path, g):
+    global k
+    if len(path) == k:
+        compute_min(g)
+        return
     for i in range(k):
-        r = commands[command[i]][0]-1
-        c = commands[command[i]][1]-1
-        s = commands[command[i]][2]-1
-        g = rotate(r, c, s, g)
-    print(command)
-    compute_min(g)
+        if i not in path:
+            path.append(i)
+            gr = rotate(commands[i][0]-1, commands[i][1]-1, commands[i][2], g)
+            dfs(path, gr)
+            path.pop()
+
+
+dfs([], graph)
 
 print(min_value)
