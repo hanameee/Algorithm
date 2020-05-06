@@ -51,4 +51,4 @@ def solution(s):
 
 # print(solution("{{123}}"))
 print(solution("{{20,111},{111}}"))
-# print(solution("{{1,2,3},{2,1},{1,2,4,3},{2}}"))
+print(solution("{{1,2,3},{2,1},{1,2,4,3},{2}}"))
