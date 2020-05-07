@@ -130,97 +130,56 @@ def
 
 나는 map을 만들어두고, 그 map을 build frame을 하나씩 돌면서 완성해나가는 방식으로 했는데 그럴 필요가 없었다.
 
-그냥 result 자체를 list (혹은 set) 로 관리하고,
+그냥 result 자체를 list (혹은 set) 로 관리하면 되었다. 구현을 할 때 반드시 N에 맞춰 모든 것을 맞출 필요는 없다는걸 알게 됨. query에 따라 포함시키고, 그 query를 다 돌면서 확인하는 것도 하나의 방법.
 
 ```python
 from copy import deepcopy
 
 
-# 조건 확인 (mp의 x,y에 대해 type을 설치 할 수 있는가)
-def is_valid(x, y, mp, t):
-    print(x, y, t)
-    # 기둥이라면
-    if t == 0:
-        # 바닥이거나, 양옆 중 한쪽에 보가 있거나, 아래쪽에 기둥이 있거나
-        if y == 0 or mp[x-1][y][1] or mp[x+1][y][1] or mp[x][y-1][0]:
-            print("True")
-            return True
-        else:
-            print("False")
-            return False
-    # 보라면
+def check_valid(x, y, a, b, bt):
+    # 삭제하기
+    if b == 0:
+        temp_bt = deepcopy(bt)
+        temp_bt.pop(bt.index([x, y, a]))
+        for x_, y_, a_ in bt:
+            if x_ == x and y_ == y and a == a_:
+                continue
+            if not check_valid(x_, y_, a_, 1, temp_bt):
+                return False
+            else:
+                temp_bt.append([x_, y_, a_])
+        return True
+    # 설치하기
     else:
-        # 양옆 중 한쪽에 기둥 설치되어 있거나, 양쪽에 보가 설치되어 있어야함
-        if mp[x][y-1][0] or mp[x+1][y-1][0] or (mp[x-1][y][1] and mp[x+1][y][1]):
-            print("True")
-            return True
+        # 보 설치
+        if a:
+            if [x, y-1, 0] in bt or [x+1, y-1, 0] in bt or ([x-1, y, 1] in bt and [x+1, y, 1] in bt):
+                return True
+        # 기둥 설치
         else:
-            print("False")
-            return False
+            if y == 0 or [x-1, y, 1] in bt or [x, y, 1] in bt or [x, y-1, 0] in bt:
+                return True
+    return False
 
 
 def solution(n, build_frame):
-    # 교차점의 [0]은 기둥, [1]은 보
-    mp = [[[[0], [0]] for i in range(n+1)] for i in range(n+1)]
-    for y, x, a, b in build_frame:
-        # 삭제 명령어일때
-        if b == 0:
-            # 그래프를 복사해서 해당 원소를 지워본 뒤
-            tmp_mp = deepcopy(mp)
-            tmp_mp[x][y][a] = False
-            # validity를 체크한다
-            # 삭제한게 기둥이라면, 양 옆에 보가 있거나 / 위에 기둥이 있다면 그들의 validity 체크
-            if a == 0:
-                result = 0
-                if tmp_mp[x-1][y+1][1]:
-                    result += 1
-                    if is_valid(x-1, y+1, tmp_mp, 1):
-                        result -= 1
-                if tmp_mp[x][y+1][1]:
-                    result += 1
-                    if is_valid(x, y+1, tmp_mp, 1):
-                        result -= 1
-                if tmp_mp[x][y+1][0]:
-                    result += 1
-                    if is_valid(x, y+1, tmp_mp, 0):
-                        result -= 1
-                if result == 0:
-                    mp = tmp_mp
-            # 삭제한게 보라면, 양 옆에 보가 있거나 / 그 자리 또는 x+1에 기둥이 있다면 그들의 validity 체크
+    built_frame = []
+    # x가 열, y가 행
+    for order in build_frame:
+        x, y, a, b = order
+        if check_valid(x, y, a, b, built_frame):
+            if b == 1:
+                built_frame.append([x, y, a])
             else:
-                result = 0
-                if tmp_mp[x-1][y][1]:
-                    result += 1
-                    if is_valid(x-1, y, tmp_mp, 1):
-                        result -= 1
-                if tmp_mp[x+1][y][1]:
-                    result += 1
-                    if is_valid(x+1, y, tmp_mp, 1):
-                        result -= 1
-                if tmp_mp[x][y][0]:
-                    result += 1
-                    if is_valid(x, y, tmp_mp, 0):
-                        result -= 1
-                if tmp_mp[x+1][y][0]:
-                    result += 1
-                    if is_valid(x+1, y, tmp_mp, 0):
-                        result -= 1
-                if result == 0:
-                    mp = tmp_mp
-
-        # 설치 명령어일때
-        else:
-            if is_valid(x, y, mp, a):
-                mp[x][y][a] = True
-    for _ in mp:
-        print(_)
-    # graph = [[0]*]
-    # answer = [[]]
-    # return answer
-
-
-solution(5, [[0, 0, 0, 1], [2, 0, 0, 1], [4, 0, 0, 1], [0, 1, 1, 1], [1, 1, 1, 1], [
-         2, 1, 1, 1], [3, 1, 1, 1], [2, 0, 0, 0], [1, 1, 1, 0], [2, 2, 0, 1]])
-
+                built_frame.pop(built_frame.index([x, y, a]))
+    answer = built_frame
+    answer.sort()
+    return answer
 ```
+
+실수가 잦았는데, 대표적인 실수 포인트는 삭제에서 나왔다. 삭제는 한개를 삭제해본 뒤 나머지 애들이 다 설치 가능한지를 보면 되는데, 순서대로만 체크했던것이 실수 포인트. 삭제는 해당 건물을 짓기 전 명령까지 모두 다 설치한 후, 삭제하는것이기에 순서대로 보면 안되고 모든 칸들을 다 보는 것이 맞다. 
+
+물론 왼/오 보, 아래 기둥 이런 식으로 체크해도 되지만 그럼 경우의수가 너무 많아지니 그냥 지금까지 세운 애들을 다 도는 것이 편하다.
+
+set은 정렬이 안되는 것도 기억.
 
