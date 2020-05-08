@@ -77,7 +77,7 @@ print(solution([["1", "1", "1", "2"],
 
 ## 4. 무지의 먹방 라이브
 
-어렵누...ㅠ
+어렵누...ㅠ 거의 오늘 하루종일 붙들고 있었네 ^^
 내가 생각한건, 음식들을 최소값으로 정렬하고 그 음식들을 다 먹었을 때 단위로 생각하는 것. 
 
 근데 음식들을 정렬했을 때 원래의 순서를 기억하는 것이 어려웠다.
@@ -131,12 +131,126 @@ def solution(food_times, k):
 print(solution([3, 1, 2], 5))  # 1이 /나와야 함
 ```
 
-
 위 풀이 하면 틀림...뭐지...뭐 실수했지..다시 찾아보기
 
-`정답 코드`
+Heapq 안쓰고 그냥 sort 해도 되긴 되는구나...정말 놀랍따..
 
 ```python
+def solution(food_times, k):
+    times = {}
+    for idx, time in enumerate(food_times):
+        if time in times:
+            times[time].append(idx)
+        else:
+            times[time] = [idx]
 
+    len_foods = len(food_times)
+    cycle = 0
+    for time in sorted(times):
+        if k - (len_foods*(time-cycle)) >= 0:
+            k -= len_foods*(time-cycle)
+            len_foods -= len(times[time])
+            cycle += time-cycle
+        else:
+            k %= len_foods
+            for i in times:
+                if i >= time:
+                    idx = times[i][0]
+                    break
+            for i in range(idx, len(food_times)):
+                if food_times[i] >= time:
+                    if k == 0:
+                        return i+1
+                    k -= 1
+    return -1
+    
+```
+
+
+
+## 길 찾기 게임
+
+파이썬에서의 class 사용과 트리/전위순위/후위순위를 복습할 수 있었던 문제.
+카카오 코테는 어렵고 힘들지만 재밌다. 문제를 어쩜 이렇게 풀락말락 재밌게 내주시는지 ^_^...
+
+```python
+import sys
+sys.setrecursionlimit(10**6)
+
+
+# 길 찾기 게임
+class Node(object):
+    def __init__(self, x, data):
+        self.data = data
+        self.left = None
+        self.right = None
+        self.x = x
+
+
+pre_lst = []
+post_lst = []
+
+
+def pre_order(node):
+    global pre_lst
+    pre_lst.append(node.data)
+    if node.left:
+        pre_order(node.left)
+    if node.right:
+        pre_order(node.right)
+
+
+def post_order(node):
+    global post_lst
+    if node.left:
+        post_order(node.left)
+    if node.right:
+        post_order(node.right)
+    post_lst.append(node.data)
+
+
+class BinaryTree(object):
+    def __init__(self):
+        self.root = None
+
+    def insert(self, x, data):
+        self.root = self.insert_value(self.root, x, data)
+        return self.root is not None
+
+    def insert_value(self, node, x, data):
+        # 자식이 없다면 그 자리에 데이터를 삽입한다
+        if node is None:
+            node = Node(x, data)
+        else:
+            if x <= node.x:
+                node.left = self.insert_value(node.left, x, data)
+            else:
+                node.right = self.insert_value(node.right, x, data)
+        return node
+
+    def level_order_traversal(self):
+        def _level_order_traversal(root):
+            queue = [root]
+            while queue:
+                root = queue.pop(0)
+                if root is not None:
+                    if root.left:
+                        queue.append(root.left)
+                    if root.right:
+                        queue.append(root.right)
+        _level_order_traversal(self.root)
+
+
+def solution(nodeinfo):
+    global pre_lst, post_lst
+    nodeinfo = [value+[idx+1] for idx, value in enumerate(nodeinfo)]
+    nodeinfo.sort(key=lambda x: (-x[1], x[0]))
+    bst = BinaryTree()
+    for node_idx in nodeinfo:
+        bst.insert(node_idx[0], node_idx[2])
+    pre_order(bst.root)
+    post_order(bst.root)
+    answer = [pre_lst, post_lst]
+    return answer
 ```
 
