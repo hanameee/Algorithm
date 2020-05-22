@@ -3,7 +3,7 @@ input = sys.stdin.readline
 ck_row = [[0]*10 for i in range(9)]
 ck_column = [[0]*10 for i in range(9)]
 ck_box = [[0]*10 for i in range(9)]
-board = [list(map(int, list(input().strip()))) for i in range(9)]
+board = [list(map(int, input().strip().split())) for i in range(9)]
 
 
 for i in range(9):
@@ -26,7 +26,7 @@ def dfs(x, y):
         if x == 8 and y == 8:
             for row in board:
                 row = map(str, row)
-                print("".join(row))
+                print(" ".join(row))
             sys.exit(0)
         if y == 8:
             return dfs(x+1, 0)
@@ -39,7 +39,7 @@ def dfs(x, y):
         if x == 8 and y == 8:
             for row in board:
                 row = map(str, row)
-                print("".join(row))
+                print(" ".join(row))
             sys.exit(0)
         ck_row[x][i] = 1
         ck_column[y][i] = 1
