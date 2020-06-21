@@ -11,7 +11,6 @@ import sys
 
 def rotLeft(a, d):
     newA = a[d:] + a[0:d]
-    print(newA)
     result = " ".join(map(str, newA)).rstrip()
     return result
 
