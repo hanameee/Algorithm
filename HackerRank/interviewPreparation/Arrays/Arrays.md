@@ -71,3 +71,38 @@ def minimumSwaps(arr):
     return swaps
 ```
 
+## Array Manipulation
+
+Brute Force로 그대로 구현하는것 말고, O(n) 에 풀 수 있는 방법이 있을 터인데, 생각이 안났다.
+
+그래서 discussion 을 봤다! (당당)
+
+정말 브릴리언트한✨ 풀이가 있더라.
+
+```python
+def arrayManipulation(n, queries):
+    arr = [0]*(n+1)
+    for q in queries:
+        arr[q[0]-1] += q[2]
+        arr[q[1]] -= q[2]
+    answer = 0
+    cumulative_sum = 0
+    for value in arr:
+        cumulative_sum += value
+        answer = max(answer, cumulative_sum)
+    return answer
+```
+
+`a,b,v` 쿼리가 있을 때, 끝 점의 값만 기록하는 것이다.
+
+a에는 v를, b+1에는 -v를 기록한다. (정확하게 말하면 n만큼의 배열을 0으로 초기화한 뒤 v, -v만큼 더하고 빼주는 것) 
+
+이렇게 기록하면, 누적합을 했을 때 가장 큰 누적합이 최대 값임을 알 수 있다.
+
+1,5,3 과 3,6,2 query가 있다고 해보자.
+
+1에 3을 기록하고, 6에 -3을 기록한다.
+
+3에 2를 기록하고, 7에 -2를 기록한다.
+
+그러면 누적합은 `3 3 5 5 5 2 0` 이 되고, 이는 모든 값들을 합친 결과와 동일하다. 일일히 모든 index를 계산하지 않아도 누적합의 원리로 최댓값을 구할 수 있는 것.
