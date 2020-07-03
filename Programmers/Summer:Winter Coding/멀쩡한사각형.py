@@ -1,26 +1,22 @@
 import math
 
 
-def get_y(x, w, h):
-    return -(h/w)*x+h
+def get_gcd(a, b):
+    if a < b:
+        a, b = b, a
+    while b != 0:
+        a = a % b
+        a, b = b, a
+    return a
 
 
 def solution(w, h):
-    answer = w*h
-    prev_y = get_y(0, w, h)
-    if w % 2 == 1:
-        for i in range((w//2)):
-            next_y = get_y(i+1, w, h)
-            answer -= 2*(math.ceil(prev_y)-math.floor(next_y))
-            prev_y = next_y
-        answer -= math.ceil(get_y(w//2, w, h)) - \
-            math.floor(get_y((w//2)+1, w, h))
+    total_rects = w*h
+    gcd = get_gcd(w, h)
+    if gcd == 1:
+        return total_rects - w+h-1
     else:
-        for i in range(w//2):
-            next_y = get_y(i+1, w, h)
-            answer -= 2*(math.ceil(prev_y)-math.floor(next_y))
-            prev_y = next_y
-    return answer
+        return total_rects - ((w//gcd)+(h//gcd)-1)*gcd
 
 
-print(solution(2, 7))  # 80
+print(solution(8, 12))
