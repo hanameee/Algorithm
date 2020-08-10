@@ -1,19 +1,23 @@
 def solution(s):
-    arr = s.split(" ")
     result = ""
-    for idx in range(len(arr)):
-        word = arr[idx]
-        if word == "":
+    buff = ""
+    for char in s:
+        if char == " ":
+            if len(buff) > 0:
+                if len(buff) > 1:
+                    result += buff[0].upper() + buff[1:].lower()
+                else:
+                    result += buff[0].upper()
+            buff = ""
             result += " "
-            continue
-        if len(word) > 1:
-            result += word[0].upper()+word[1:].lower()
         else:
-            result += word[0].upper()
-        if idx != len(arr)-1:
-            result += " "
+            buff += char
+    if len(buff) > 1:
+        result += buff[0].upper() + buff[1:].lower()
+    elif len(buff) == 1:
+        result += buff[0].upper()
     return result
 
 
-print(solution(" 3people unFollowed me"))
+print(solution(" 3people unFollowed me   "))
 print(solution("3people   unFollowed me"))
