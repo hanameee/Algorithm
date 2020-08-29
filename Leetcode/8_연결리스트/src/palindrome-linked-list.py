@@ -12,6 +12,7 @@ def solution(head):
     while len(q) > 1:
         if q.pop() != q[-1]:
             return False
+    return True
 
 
 solution()
