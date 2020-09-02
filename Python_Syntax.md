@@ -1,6 +1,6 @@
 # Python Syntax
 
-알고 있으면 유용한 파이썬 문법들
+코테 볼 때 알고 있으면 유용한 파이썬 문법 🐝
 
 ## List comprehension
 
@@ -145,5 +145,108 @@ locals() 는 로컬 심볼 테이블 딕셔너리를 가져오는 메소드로, 
 ```python
 import pprint
 pprint.pprint(locals())
+```
+
+## zip()
+
+zip 함수는 여러 시퀀스에서 **동일한 인덱스의 아이템을 순서대로 추출하여 새로운 튜플 시퀀스**를 만들어준다. 튜플은  immutable 객체이기에 값 조작이 불가능하다.
+
+또, zip 함수 실제 리턴 값은 제너레이터이기에, 값을 추출하기 위해서는 list로 한번 더 묶어줘야 한다.
+
+```python
+a = [1,2,3,4,5]
+b = [2,3,4,5]
+c = [3,4,5]
+
+list(zip(a,b)) # [(1,2),(2,3),(3,4),(4,5)]
+list(zip(a,b,c)) # [(1,2,3),(2,3,4),(3,4,5)]
+```
+
+
+
+## *
+
+파이썬에서 `*` 는 sequence unpacking operator로, 시퀀스를 풀어헤치는 연산자를 뜻한다. 주로 튜플이나 리스트를 언패킹하기 위해 사용한다. 
+
+### 1. zip과 함께 사용
+
+참고 - `Leetcode/11_해시테이블/src/top-k-frequent-elements.py`
+
+```python
+list(zip(*collections.Counter(nums).most_common(k)))[0]
+```
+
+*없이 `[(1,3),(2,2)]` 를 zip 하면 원치 않은 결과가 나옴. *로 튜플을 리스트로 풀어주고 zip을 적용해야 원하는 결과가 나온다.
+
+### 2. 리스트 출력
+
+```python
+a = ["a", "b", "c"]
+print(*a) # a b c
+```
+
+리스트를 공백으로 분리해 출력할때 간단하게 사용할 수 있는 방법
+
+### 3. 변수의 할당
+
+약간 Javascript의 spread 연산자처럼 활용할 수 있는 것 같다.
+
+`*`는 리스트/튜플 언패킹,
+
+```python
+a = [1, 2, 3]
+b = [4, 5]
+c = [*a, *b]
+print(c) # [1, 2, 3, 4, 5]
+```
+
+ `**` 는 키/값 페어를 언패킹 하는 데에 사용된다
+
+```python
+info = {1:"a",2:"b",3:"c"}
+new_info = {**info, 3:"d"} 
+print(new_info) # {1: 'a', 2: 'b', 3: 'd'}
+```
+
+
+
+## 중첩함수
+
+DFS, BFS 처럼 함수 끼리 변수를 공유해야 하는 일이 잦을 때 쓰면 유용한 방법.
+
+자식 함수는 부모 함수의 변수를 자유롭게 읽을 수 있다.
+
+```python
+def outer_function(s):
+  text = s
+  def inner_function():
+    print(text)
+	inner_function()
+  
+outer_function("Hello!")
+# Hello!
+```
+
+다만, 주의할 점이 몇가지 있다.
+
+- 중첩 함수에서는 부모 함수의 가변 객체를 조작할 수 있다. (부모 함수에도 그 조작한 결과가 반영된다) 예를 들어, 자식 함수에서 부모 함수의 리스트를 조작하면, 부모 함수에도 반영된다.
+- 하지만 **불변 객체는 조작할 수 없다**. 예를 들어 문자열 같은 경우엔 불변 객체이기에 조작할 수 없다. 값을 변경하려면 재할당 할 수밖에 없고, 이렇게 재할당 한 값은 자식 함수 내에서만 사용 가능한 새로운 로컬변수로 선언되며, 이 재할당된 값은 **부모 함수에서는 반영되지 않는다.**
+
+```python
+def outer_function(s):
+  text = s
+  print(text)
+  def inner_function1():
+    text = "Bye!"
+    print(text)
+  def inner_function2():
+    print(text)
+	inner_function1()
+  inner_function2()
+
+outer_function("Hello!")
+# Hello! > 부모의 불변객체
+# Bye! > 문자열은 조작이 불가능하므로 inner_function1은 자기만의 text 지역변수를 가짐
+# Hello! > 부모의 text
 ```
 
