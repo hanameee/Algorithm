@@ -1,8 +1,96 @@
 # 2018 KAKAO BLIND RECRUITMENT
 
+## [1차]
+
+### 2. 캐시 (난이도: 하)
+
+재밌는 문제. cache를 어떤걸 써야 하나 고민했는데 cache 사이즈가 컸으면 heapq나 deque를 고민했겠지만 제한이 30으로 작아서 그냥 list 썼다.
+
+```python
+def is_in_cache(cache, city):
+    for idx in range(len(cache)):
+        if cache[idx][1] == city:
+            return idx
+    else:
+        return -1
 
 
-## 1. 뉴스 클러스터링
+def solution(cacheSize, cities):
+    cache = []
+    time = 0
+    if not cacheSize:
+        return len(cities)*5
+    # cities 하나하나 본다
+    for city in cities:
+        result = is_in_cache(cache, city.lower())
+        # 캐시에 있다면
+        if result != -1:
+            time += 1  # hit
+            # 최근 사용 업데이트
+            for c in cache:
+                c[0] += 1
+            cache[result][0] = 0
+        # 캐시에 없다면
+        else:
+            time += 5  # miss
+            # 캐시가 비었다면
+            if len(cache) < cacheSize:
+                for c in cache:
+                    c[0] += 1
+                # 추가해주기
+                cache.append([0, city.lower()])
+            # 캐시가 꽉 차있다면 LRU 삭제하고 추가해주기
+            else:
+                cache.sort(key=lambda x: x[0])
+                cache.pop()
+                for c in cache:
+                    c[0] += 1
+                cache.append([0, city.lower()])
+    answer = time
+    return time
+
+
+print(solution(5, ["Jeju", "Pangyo", "Seoul", "NewYork", "LA",
+                   "SanFrancisco", "Seoul", "Rome", "Paris", "Jeju", "NewYork", "Rome"]))
+```
+
+
+
+### 4. 셔틀버스 (난이도: 중)
+
+```python
+import heapq
+
+
+def solution(n, t, m, timetable):
+    curr_time = 540
+    for i in range(len(timetable)):
+        time = timetable[i]
+        timetable[i] = int(time[:2])*60+int(time[3:])
+    heapq.heapify(timetable)
+    latest_time = curr_time
+    for i in range(n):
+        count = 0
+        while count < m and timetable:
+            curr_person = heapq.heappop(timetable)
+            if curr_person <= curr_time:
+                count += 1
+                continue
+            else:
+                heapq.heappush(timetable, curr_person)
+                break
+        if count < m:
+            latest_time = curr_time
+        else:
+            latest_time = curr_person-1
+        curr_time += t
+    answer = '{:02d}:{:02d}'.format(*divmod(latest_time, 60))
+    return answer
+```
+
+
+
+### 5. 뉴스 클러스터링 (난이도: 중)
 
 또또또또 한시간이나 삽질했쥬? 문제를 잘못 읽었다.
 **중복을 허용하는 다중 집합** 에 확장해서 사용하는건데! 그냥 단순히 셌다. 그라믄 안된다.
@@ -85,61 +173,7 @@ Counter을 사용하면 좀 더 편하게 구할 수 있는 것 같다.
 
 
 
-## 2. 캐시
-
-재밌는 문제. cache를 어떤걸 써야 하나 고민했는데 cache 사이즈가 컸으면 heapq나 deque를 고민했겠지만 제한이 30으로 작아서 그냥 list 썼다.
-
-```python
-def is_in_cache(cache, city):
-    for idx in range(len(cache)):
-        if cache[idx][1] == city:
-            return idx
-    else:
-        return -1
-
-
-def solution(cacheSize, cities):
-    cache = []
-    time = 0
-    if not cacheSize:
-        return len(cities)*5
-    # cities 하나하나 본다
-    for city in cities:
-        result = is_in_cache(cache, city.lower())
-        # 캐시에 있다면
-        if result != -1:
-            time += 1  # hit
-            # 최근 사용 업데이트
-            for c in cache:
-                c[0] += 1
-            cache[result][0] = 0
-        # 캐시에 없다면
-        else:
-            time += 5  # miss
-            # 캐시가 비었다면
-            if len(cache) < cacheSize:
-                for c in cache:
-                    c[0] += 1
-                # 추가해주기
-                cache.append([0, city.lower()])
-            # 캐시가 꽉 차있다면 LRU 삭제하고 추가해주기
-            else:
-                cache.sort(key=lambda x: x[0])
-                cache.pop()
-                for c in cache:
-                    c[0] += 1
-                cache.append([0, city.lower()])
-    answer = time
-    return time
-
-
-print(solution(5, ["Jeju", "Pangyo", "Seoul", "NewYork", "LA",
-                   "SanFrancisco", "Seoul", "Rome", "Paris", "Jeju", "NewYork", "Rome"]))
-```
-
-
-
-## 3. 프렌즈4블록
+### 6. 프렌즈4블록 (난이도: 상)
 
 dropdown을 하면서 좌표가 바뀌기 때문에 done 좌표를 저장하는 것은 불필요하다. 쓰잘데기 없는 변수 추가해서 1시간 걸림.
 
@@ -148,11 +182,52 @@ dropdown을 하면서 좌표가 바뀌기 때문에 done 좌표를 저장하는 
 
 
 
+### 7. 추석 클러스터링
+
+파이썬 네이놈....
+
+```python
+import heapq
+
+
+def solution(lines):
+    for idx in range(len(lines)):
+        line = lines[idx]
+        linearr = line.split(" ")
+        linearr[1] = linearr[1].replace(".", ":").split(":")
+        linearr[1] = int(linearr[1][3])/1000+int(linearr[1][2]) + \
+            int(linearr[1][1])*60+int(linearr[1][0])*60*60
+        lines[idx] = (linearr[1]-float(linearr[2][0:-1]) +
+                      0.001, float(linearr[2][0:-1]))
+    lines = sorted(lines, key=lambda x: x[0])
+    max_cap = 0
+    q = []
+    for line in lines:
+        heapq.heappush(q, sum(line)-0.001)
+        startTime = line[0]
+        while q:
+            endTime = heapq.heappop(q)
+            # 네이노오오오오오옴 🤬
+            if endTime >= round(startTime-1+0.001, 3):
+                heapq.heappush(q, endTime)
+                break
+        max_cap = max(max_cap, len(q))
+    return max_cap
+```
+
+부동소수점 개꿀잼몰카였던것이다. 아니 카카오 양반들 궂이 시작/끝시간 포함시킨 이유가...? 진짜 너무하지 않소.
+
+
+
 ---
 
 # [3차]
+### 1. n진수 게임
 
-## 파일명 정렬
+이 문제 가지고 몇시간을 고생한거야...😟 갈길이 멀다...증말...
+
+
+### 2. 파일명 정렬
 `python 코드`
 
 ```python
@@ -222,3 +297,5 @@ return result
 ```
 
 느긋하게 풀었다지만 디버깅까지 포함하면 거의 1시간 동안 잡고 있었다. 이런 문제는 빨리 풀 수 있도록 속도를 늘려야 한다. 힝구
+
+
