@@ -105,3 +105,94 @@ def solution(dirs):
     return answer
 ```
 
+## 숫자 게임
+
+A,B 둘다 정렬을 하고 풀면 되는 간단한 문제다. 
+
+쉽게 생각하면, 제일 작은 B부터 시작해서 A를 이길 때까지? B의 인덱스를 증가시키면 된다.
+
+```js
+def solution(A, B):
+    A.sort()
+    B.sort()
+    answer = 0
+    b = 0
+    for a in A:
+        if a >= B[b]:
+            while a >= B[b]:
+                b += 1
+                if b == len(B):
+                    return answer
+        answer += 1
+        b += 1
+        if b == len(B):
+            return answer
+    return answer
+```
+
+## 기지국 설치
+
+대충 풀면 틀린다. 수도코드 똑바로 쓰고 난 다음에 코드 쓰기!
+
+```python
+import math
+
+
+def solution(n, stations, w):
+    start_idx = 0
+    answer = 0
+    gap = w*2+1
+    for station in stations:
+        if start_idx >= n:
+            break
+        end_idx = station-1-w-1
+        if start_idx > end_idx:
+            start_idx = station+w
+            continue
+        else:
+            answer += math.ceil((end_idx-start_idx+1)/gap)
+            start_idx = station+w
+    if start_idx < n:
+        answer += math.ceil((n-start_idx)/gap)
+    return answer
+```
+
+기본적으로 input의 크기가 2억이기때문에 하나씩 탐색하면 효율성 터진다.
+
+힌트는 stations의 크기가 **10000 이하의 자연수**라는 데에 있다. 10000은 만만따리한 숫자이기 때문에 loop을 돌아도 되기 때문이다. 따라서 stations를 하나씩 돌면서, 이 전 station이 커버하지 못한 곳 ~ 지금 station이 커버하지 못한 곳을 파악한다.
+
+이 전 station이 5까지 커버하고, 지금 station이 15부터 커버했다면 6~14는 빈 공간이 된다. w가 2라면 하나의 w를 놓을 때마다 5칸을 커버할 수 있다. 따라서 6~14를 커버하기 위해서는 9칸을 채워야 하고, 그러려면 math.ceil(9/5) 만큼의 station을 추가로 증설해야 한다.
+
+idx가 1부터 주어지는 것이 조금 헷갈리고, stations가 겹칠 수도 있고, (5~10을 커버하는 station 뒤에 바로 6~11을 커버하는 station이 올 수도 있다.) station이 커버하는 idx가 n을 넘어버릴 수도 있기 때문에 (n=15인데 14에 양쪽으로 2씩 커버하는 station을 놓는다던가) 이런 부분을 조금 조심해서 처리해줘야 한다.
+
+## 배달
+
+```python
+import heapq
+
+
+def solution(N, road, K):
+    adj = [[] for i in range(N+1)]
+    dist = [float("inf") for i in range(N+1)]
+    dist[1] = 0
+    need_visit = [(0, 1)]
+    for r in road:
+        a, b, c = r
+        adj[a].append((c, b))
+        adj[b].append((c, a))
+    while need_visit:
+        curr_dist, curr_v = heapq.heappop(need_visit)
+        for adj_dist, adj_v in adj[curr_v]:
+            if dist[adj_v] > adj_dist+curr_dist:
+                dist[adj_v] = adj_dist+curr_dist
+                heapq.heappush(need_visit, (dist[adj_v], adj_v))
+    answer = 0
+    for d in dist:
+        if d <= K:
+            answer += 1
+    return answer
+
+```
+
+기본적인 다익스트라 최단 경로 문제. 다익스트라는 사실상 최단경로 배열만 추가적으로 관리하는 BFS라고 볼 수 있다.
+
