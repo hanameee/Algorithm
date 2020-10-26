@@ -5,7 +5,7 @@ def solution(s):
             if stk[-1] == char:
                 stk.pop()
                 continue
-        # 항상 append 해줘야 함.
+        # early return 안되면 항상 append 해줘야 함. 분기문 주의
         stk.append(char)
     if len(stk) == 0:
         return True
