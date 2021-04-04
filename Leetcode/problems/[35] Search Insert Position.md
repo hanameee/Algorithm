@@ -39,3 +39,4 @@ class Solution(object):
                 return mid
         return l
 ```
+
