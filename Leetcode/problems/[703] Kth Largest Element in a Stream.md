@@ -1,4 +1,4 @@
-# [17] Kth Largest Element in a Stream
+# [703] Kth Largest Element in a Stream
 
 ## Info
 
@@ -15,7 +15,7 @@
 
 ## Result
 
-![image-20210503001005683](image-20210503001005683.png)
+## ![image-20210503010407350](image-20210503010407350.png)
 
 ## Solving
 
