@@ -49,3 +49,29 @@ class Solution(object):
             num_B -= 1
         return nums
 ```
+
+## Solution
+
+[dutch partitioning problem](https://en.wikipedia.org/wiki/Dutch_national_flag_problem) 이라고 한다. 
+
+원소가 0,1,2 3개 밖에 존재하지 않으므로 가능한 solution이다.
+
+red, white, blue 포인터를 두고 원소를 swap해가는 방법.
+
+```python
+def sortColors(self, nums):
+    red, white, blue = 0, 0, len(nums)-1
+    
+    while white <= blue:
+        if nums[white] == 0:
+            nums[red], nums[white] = nums[white], nums[red]
+            white += 1
+            red += 1
+        elif nums[white] == 1:
+            white += 1
+        else:
+            nums[white], nums[blue] = nums[blue], nums[white]
+            blue -= 1
+```
+
+까지 봤는데 8시 55분이네요 추후 정리하겠습니다 
